@@ -1,0 +1,46 @@
+{
+  "frames": [
+    {
+      "filename": "cloud1",
+      "frame": { "x": 0, "y": 0, "w": 384, "h": 408 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 408 },
+      "sourceSize": { "w": 1922, "h": 408 },
+      "pivot": { "x": 0.5, "y": 0.5 }
+    },
+    {
+      "filename": "cloud2",
+      "frame": { "x": 384, "y": 0, "w": 330, "h": 408 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 384, "y": 0, "w": 330, "h": 408 },
+      "sourceSize": { "w": 1922, "h": 408 },
+      "pivot": { "x": 0.5, "y": 0.5 }
+    },
+    {
+      "filename": "cloud3",
+      "frame": { "x": 713, "y": 0, "w": 470, "h": 408 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 713, "y": 0, "w": 470, "h": 408 },
+      "sourceSize": { "w": 1922, "h": 408 },
+      "pivot": { "x": 0.5, "y": 0.5 }
+    },
+    {
+      "filename": "cloud4",
+      "frame": { "x": 1186, "y": 0, "w": 738, "h": 408 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 1186, "y": 0, "w": 738, "h": 408 },
+      "sourceSize": { "w": 1922, "h": 408 },
+      "pivot": { "x": 0.5, "y": 0.5 }
+    }
+  ],
+  "meta": {
+    "image": "clouds.png",
+    "format": "RGBA8888",
+    "size": { "w": 1922, "h": 408 },
+    "scale": "1"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "textures": [
+    {
+      "image": "/assets/white-dog-sprite.png",
+      "format": "RGBA8888",
+      "size": {
+        "w": 3610,
+        "h": 306
+      },
+      "scale": 1,
+      "frames": [
+        {
+          "filename": "walking1",
+          "rotated": false,
+          "trimmed": true,
+          "sourceSize": {
+            "w": 3610,
+            "h": 306
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3610,
+            "h": 306
+          },
+          "frame": {
+            "x": 1,
+            "y": 1,
+            "w": 722,
+            "h": 306
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        },
+        {
+          "filename": "walking2",
+          "rotated": false,
+          "trimmed": true,
+          "sourceSize": {
+            "w": 3610,
+            "h": 306
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3610,
+            "h": 306
+          },
+          "frame": {
+            "x": 1,
+            "y": 722,
+            "w": 722,
+            "h": 306
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        },
+        {
+          "filename": "walking3",
+          "rotated": false,
+          "trimmed": true,
+          "sourceSize": {
+            "w": 3610,
+            "h": 306
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3610,
+            "h": 306
+          },
+          "frame": {
+            "x": 1,
+            "y": 1444,
+            "w": 722,
+            "h": 306
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        },
+        {
+          "filename": "walking4",
+          "rotated": false,
+          "trimmed": true,
+          "sourceSize": {
+            "w": 3610,
+            "h": 306
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3610,
+            "h": 306
+          },
+          "frame": {
+            "x": 1,
+            "y": 2166,
+            "w": 722,
+            "h": 306
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "format": "RGBA8888",
+    "image": "/assets/white-dog-sprite.png",
+    "size": {
+      "w": 3612,
+      "h": 308
+    },
+    "scale": "1"
+  }
+}
