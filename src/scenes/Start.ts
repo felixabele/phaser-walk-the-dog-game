@@ -10,6 +10,8 @@ export default class Start extends Phaser.Scene {
   create() {
     const { x, y } = getScreenCenter(this);
     setScreenText("Bereit zu spielen?", this);
-    new Button(x, y + 70, "Starten", this, () => this.scene.start("GameScene"));
+    new Button(x, y + 70, "Starten", this, () =>
+      this.scene.start("Level2Scene")
+    );
   }
 }

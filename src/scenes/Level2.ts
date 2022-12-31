@@ -1,32 +1,35 @@
 import Phaser from "phaser";
 import Player from "../player";
-import Chicken from "../chicken";
 import Button from "../button";
+import MovingPlatform from "../movingPlatform";
 import { getScreenCenter, setScreenText } from "../screen";
 import Clouds from "./Clouds";
 
-export default class Game extends Phaser.Scene {
+export default class Level2 extends Phaser.Scene {
   cursors: any;
   clouds?: Phaser.Scene;
   player?: Player;
-  chicken?: Chicken;
+  platforms: MovingPlatform[] = [];
 
   constructor() {
-    super("GameScene");
+    super("Level2Scene");
   }
 
   preload() {
     this.load.image("tiles", "assets/titles_01.png");
-    this.load.tilemapTiledJSON("map", "assets/level_1_tiles.json");
+    this.load.tilemapTiledJSON("map", "assets/level_2_tiles.json");
     this.load.spritesheet(Player.spritesheet);
-    this.load.spritesheet(Chicken.spritesheet);
+
+    this.load.atlas(
+      "platforms",
+      "assets/platforms.png",
+      "assets/platforms_spritesheet.json"
+    );
   }
 
   killCharacters() {
     this.player?.die();
     this.player = undefined;
-    this.chicken?.die();
-    this.chicken = undefined;
     this.scene.remove(this.clouds);
   }
 
@@ -52,27 +55,6 @@ export default class Game extends Phaser.Scene {
     new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
   }
 
-  addChicken(collisionLayer: Phaser.Tilemaps.TilemapLayer, xPosition: number) {
-    this.chicken = new Chicken(this, xPosition, 0);
-    this.physics.add.collider(
-      this.chicken.sprite,
-      collisionLayer,
-      (_, tile) => {
-        if (tile.properties.kills) {
-          this.chicken?.die();
-          this.chicken = undefined;
-          this.addChicken(collisionLayer, xPosition);
-        }
-      }
-    );
-
-    if (this.player) {
-      this.physics.add.overlap(this.player.sprite, this.chicken.sprite, () =>
-        this.killPLayer()
-      );
-    }
-  }
-
   addLevelEnd(map: Phaser.Tilemaps.Tilemap, player: Player) {
     const endLayer = this.physics.add.staticGroup();
     const endObjects = map.getObjectLayer("End").objects;
@@ -95,23 +77,37 @@ export default class Game extends Phaser.Scene {
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.clouds = this.scene.add("clouds", Clouds, true, { x: 0, y: 0 });
-    this.clouds.scene.moveDown();
+    // this.clouds = this.scene.add("clouds", Clouds, true, { x: 0, y: 0 });
+    // this.clouds.scene.moveDown();
 
     const map = this.make.tilemap({ key: "map" });
-
     const camera = this.cameras.main;
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    const tileset = map.addTilesetImage("level", "tiles");
+    const tileset = map.addTilesetImage("titles_01", "tiles");
     const collisionLayer = map
       .createLayer("collision", tileset, 0, 0)
       .setCollisionByProperty({ collides: true });
 
+    const platformObjects = map.getObjectLayer("platforms").objects;
+
     map.findObject("Spawn", (spawnPoint) => {
       this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+      this.platforms = platformObjects.map((platformObj) => {
+        const size =
+          platformObj.properties.find((prop: any) => prop.name === "size")
+            .value || "platform_big";
+
+        return new MovingPlatform(
+          this,
+          this.player,
+          platformObj.x,
+          platformObj.y,
+          size
+        );
+      });
+
       camera.startFollow(this.player.sprite, true, 0.08, 0.08);
       this.addColliders(collisionLayer);
-      this.addChicken(collisionLayer, map.widthInPixels);
       this.addLevelEnd(map, this.player);
     });
   }
@@ -123,6 +119,6 @@ export default class Game extends Phaser.Scene {
       this.cursors.up.isDown
     );
 
-    this.chicken?.update();
+    this.platforms.map((p) => p.update());
   }
 }

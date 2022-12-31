@@ -1,45 +1,45 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 export default class Player {
   static spritesheet = {
-    key: 'player',
-    url: '/assets/white-dog-sprite.png',
+    key: "player",
+    url: "/assets/white-dog-sprite.png",
     frameConfig: {
       frameWidth: 728,
       frameHeight: 316,
-      endFrame: 5
-    }
+      endFrame: 5,
+    },
   };
 
   public scene: Phaser.Scene;
   public sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number = 0, y: number = 0) {
     this.scene = scene;
     const { anims, physics } = scene;
 
     this.sprite = physics.add
-      .sprite(x, y, 'player', 0)
+      .sprite(x, y, "player", 0)
       .setScale(0.25, 0.25)
       .setSize(300, 316)
       .setFlipX(true)
       .setCollideWorldBounds(true);
 
     anims.create({
-      key: 'walk',
-      frames: anims.generateFrameNumbers('player', { frames: [0, 1, 2, 3] }),
-      frameRate: 8
+      key: "walk",
+      frames: anims.generateFrameNumbers("player", { frames: [0, 1, 2, 3] }),
+      frameRate: 8,
     });
 
     anims.create({
-      key: 'stop',
-      frames: anims.generateFrameNumbers('player', { frames: [3, 0] }),
-      frameRate: 8
+      key: "stop",
+      frames: anims.generateFrameNumbers("player", { frames: [3, 0] }),
+      frameRate: 8,
     });
 
     anims.create({
-      key: 'jump',
-      frames: anims.generateFrameNumbers('player', { frames: [4, 5] }),
+      key: "jump",
+      frames: anims.generateFrameNumbers("player", { frames: [4, 5] }),
       frameRate: 8,
     });
   }
@@ -50,7 +50,7 @@ export default class Player {
     const isWalking = x !== 0;
 
     if (!isWalking && !isJumping) {
-      this.sprite.play({ key: 'stop' });
+      this.sprite.play({ key: "stop" });
     } else if (isJumping) {
       this.sprite.setFrame(5);
     }
@@ -72,11 +72,11 @@ export default class Player {
   private walkLeft(): void {
     this.sprite.flipX = false;
     this.sprite.body.setVelocityX(-120);
-    this.sprite.play({ key: 'walk', repeat: 1 }, true);
+    this.sprite.play({ key: "walk", repeat: 1 }, true);
   }
 
   private walkRight(): void {
-    this.sprite.play({ key: 'walk', repeat: 1 }, true);
+    this.sprite.play({ key: "walk", repeat: 1 }, true);
     this.sprite.flipX = true;
     this.sprite.body.setVelocityX(120);
   }
@@ -85,7 +85,7 @@ export default class Player {
     setTimeout(() => {
       this.sprite.body.setVelocityY(-200);
     }, 200);
-    this.sprite.play({ key: 'jump' });
+    this.sprite.play({ key: "jump" });
   }
 
   public die() {
