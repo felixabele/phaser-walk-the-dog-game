@@ -6,70 +6,52 @@ interface Cloud {
   velocity: number;
 }
 
-export default class Clouds extends Phaser.Scene {
+export default class Clouds {
+  private scene: Phaser.Scene;
   private cloudImages: Cloud[];
   private frames: string[];
+  private worldEnd: number;
 
-  constructor() {
-    super("CloudsScene");
+  constructor(scene: Phaser.Scene, count: number = 4) {
+    this.scene = scene;
     this.cloudImages = [];
     this.frames = [];
-  }
+    this.worldEnd = this.scene.cameras.main.getBounds().width;
 
-  preload(): void {
-    this.load.image("mountains", "assets/bg_mountains.png");
-    this.load.atlas(
-      "clouds",
-      "assets/clouds.png",
-      "assets/clouds_spritesheet.json"
-    );
+    const atlasTexture = this.scene.textures.get("clouds");
+    this.frames = atlasTexture.getFrameNames();
+
+    this.cloudImages = [...Array(count)].map(() => {
+      const xPosition = randomInteger(-600, 1800);
+      return this.createCloud(xPosition);
+    });
   }
 
   createCloud(xPosition: number): Cloud {
     const randomFrame = this.frames[randomInteger(0, this.frames.length - 1)];
-    const image = this.add
+    const scale = randomDecimal(0.6, 1);
+    const image = this.scene.add
       .image(xPosition, randomInteger(-70, 300), "clouds", randomFrame)
       .setAlpha(0.7)
-      .setScrollFactor(1);
+      .setScrollFactor(1)
+      .setDepth(0)
+      .setScale(scale);
     const velocity = randomDecimal(0.1, 0.6);
     return { image, velocity };
   }
 
-  createBackground() {
-    const height = this.scale.height;
-    this.add
-      .image(0, 0, "mountains")
-      .setOrigin(0, 1)
-      .setScrollFactor(0.25)
-      .setDepth(0)
-      .setScale(0.7)
-      .setY(height + 160);
-  }
-
   killAndRecreateCloud(cloudIndex: number): void {
-    this.cloudImages.splice(cloudIndex, 1);
+    const oldCloud = this.cloudImages.splice(cloudIndex, 1)[0];
+    oldCloud.image.destroy();
     const newCloud = this.createCloud(-400);
     this.cloudImages.push(newCloud);
-  }
-
-  create(): void {
-    this.createBackground();
-    const atlasTexture = this.textures.get("clouds");
-    this.frames = atlasTexture.getFrameNames();
-
-    const initCloudCount = 4;
-    this.cloudImages = [...Array(initCloudCount)].map(() => {
-      const xPosition = randomInteger(-600, 1800);
-      return this.createCloud(xPosition);
-    });
   }
 
   update(): void {
     this.cloudImages.forEach(({ image, velocity }, i) => {
       image.x += velocity;
 
-      // if cloud outside of scene destroy it and recreate
-      if (image.x - image.width > this.sys.game.canvas.width) {
+      if (image.x - image.width > this.worldEnd) {
         this.killAndRecreateCloud(i);
       }
     });

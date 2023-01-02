@@ -1,13 +1,10 @@
 import Phaser from "phaser";
 import Player from "../player";
-import Button from "../button";
 import MovingPlatform from "../movingPlatform";
-import { getScreenCenter, setScreenText } from "../screen";
-import Clouds from "./Clouds";
+import { propertyMap } from "../utils";
+import BaseLevel from "./BaseLevel";
 
-export default class Level2 extends Phaser.Scene {
-  cursors: any;
-  clouds?: Phaser.Scene;
+export default class Level2 extends BaseLevel {
   player?: Player;
   platforms: MovingPlatform[] = [];
 
@@ -15,22 +12,9 @@ export default class Level2 extends Phaser.Scene {
     super("Level2Scene");
   }
 
-  preload() {
-    this.load.image("tiles", "assets/titles_01.png");
-    this.load.tilemapTiledJSON("map", "assets/level_2_tiles.json");
-    this.load.spritesheet(Player.spritesheet);
-
-    this.load.atlas(
-      "platforms",
-      "assets/platforms.png",
-      "assets/platforms_spritesheet.json"
-    );
-  }
-
   killCharacters() {
     this.player?.die();
     this.player = undefined;
-    this.scene.remove(this.clouds);
   }
 
   killPLayer() {
@@ -43,28 +27,6 @@ export default class Level2 extends Phaser.Scene {
     this.showSuccess();
   }
 
-  showGameOver() {
-    const { x, y } = getScreenCenter(this);
-    setScreenText("Game Over", this);
-    new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
-  }
-
-  showSuccess() {
-    const { x, y } = getScreenCenter(this);
-    setScreenText("!!! Gewonnen !!!", this);
-    new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
-  }
-
-  addLevelEnd(map: Phaser.Tilemaps.Tilemap, player: Player) {
-    const endLayer = this.physics.add.staticGroup();
-    const endObjects = map.getObjectLayer("End").objects;
-    if (!endObjects.length) throw new Error("End Object missing");
-    const endObj = endLayer
-      .create(endObjects[0].x, endObjects[0].y, "end")
-      .setVisible(false);
-    this.physics.add.overlap(player.sprite, endObj, () => this.levelEnd());
-  }
-
   addColliders(layer: Phaser.Tilemaps.TilemapLayer) {
     if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
@@ -75,15 +37,28 @@ export default class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, layer, collisionFn);
   }
 
-  create() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    // this.clouds = this.scene.add("clouds", Clouds, true, { x: 0, y: 0 });
-    // this.clouds.scene.moveDown();
+  addPlatforms(platformObjects: Phaser.Types.Tilemaps.TiledObject[]) {
+    if (!this.player) return;
+    this.platforms = platformObjects.map((platformObj: any) => {
+      const config = propertyMap(platformObj.properties);
+      return new MovingPlatform(
+        this,
+        this.player,
+        platformObj.x,
+        platformObj.y,
+        config
+      );
+    });
+  }
 
-    const map = this.make.tilemap({ key: "map" });
+  create() {
+    const map = this.make.tilemap({ key: "map2" });
     const camera = this.cameras.main;
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    const tileset = map.addTilesetImage("titles_01", "tiles");
+
+    super.create();
+
+    const tileset = map.addTilesetImage("titles_01", "tiles2");
     const collisionLayer = map
       .createLayer("collision", tileset, 0, 0)
       .setCollisionByProperty({ collides: true });
@@ -92,31 +67,19 @@ export default class Level2 extends Phaser.Scene {
 
     map.findObject("Spawn", (spawnPoint) => {
       this.player = new Player(this, spawnPoint.x, spawnPoint.y);
-      this.platforms = platformObjects.map((platformObj) => {
-        const size =
-          platformObj.properties.find((prop: any) => prop.name === "size")
-            .value || "platform_big";
-
-        return new MovingPlatform(
-          this,
-          this.player,
-          platformObj.x,
-          platformObj.y,
-          size
-        );
-      });
-
+      this.addPlatforms(platformObjects);
       camera.startFollow(this.player.sprite, true, 0.08, 0.08);
       this.addColliders(collisionLayer);
-      this.addLevelEnd(map, this.player);
+      this.addLevelEnd(map, this.player, () => this.levelEnd());
     });
   }
 
   update() {
+    super.update();
     this.player?.update(
       this.cursors.left.isDown,
       this.cursors.right.isDown,
-      this.cursors.up.isDown
+      this.cursors.up.isDown || this.cursors.space.isDown
     );
 
     this.platforms.map((p) => p.update());

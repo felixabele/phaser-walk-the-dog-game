@@ -23,7 +23,7 @@ export default class Player {
       .setScale(0.25, 0.25)
       .setSize(300, 316)
       .setFlipX(true)
-      .setCollideWorldBounds(true);
+      .setCollideWorldBounds(false);
 
     anims.create({
       key: "walk",

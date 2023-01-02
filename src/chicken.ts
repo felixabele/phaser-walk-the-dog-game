@@ -35,7 +35,7 @@ export default class Chicken {
       .setScale(0.5, 0.5)
       .setFlipX(true)
       .setBounce(this.bouncingSpeed)
-      .setCollideWorldBounds(true);
+      .setCollideWorldBounds(false);
 
     this.sprite.body.onWorldBounds = true;
     this.scene.physics.world.on(

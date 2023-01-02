@@ -6,12 +6,11 @@ type Size = "platform_small" | "platform_medium" | "platform_big";
 export default class MovingPlatform {
   scene: Phaser.Scene;
   player?: Player;
-  threshold: number;
+  speed: number;
 
   public image: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
 
   direction: "left" | "right" = "left";
-  speed: number = 1;
   minXposition: number = 0;
   maxXposition: number = 0;
 
@@ -20,18 +19,22 @@ export default class MovingPlatform {
     player?: Player,
     x: number = 0,
     y: number = 0,
-    size: Size = "platform_big",
-    threshold: number = 400
+    config: Map<string, any> = new Map()
   ) {
     this.scene = scene;
     this.player = player;
-    this.threshold = threshold;
 
-    this.minXposition = x - this.threshold;
-    this.maxXposition = x + this.threshold;
+    const size: Size = config.get("size") || "platform_big";
+    const threshold: number = config.get("threshold") || 400;
+    this.speed = config.get("speed") || 100;
 
-    this.image = this.scene.physics.add.image(x, y, "platforms", size);
-    this.image.setImmovable(true);
+    this.minXposition = x;
+    this.maxXposition = x + threshold;
+
+    this.image = this.scene.physics.add
+      .image(x, y, "platforms", size)
+      .setScale(1)
+      .setImmovable(true);
     this.image.body.allowGravity = false;
 
     if (this.player) {
@@ -49,9 +52,9 @@ export default class MovingPlatform {
 
   private move(): void {
     if (this.direction === "left") {
-      this.image.setVelocityX(-100);
+      this.image.setVelocityX(this.speed * -1);
     } else if (this.direction === "right") {
-      this.image.setVelocityX(+100);
+      this.image.setVelocityX(this.speed);
     }
   }
 
