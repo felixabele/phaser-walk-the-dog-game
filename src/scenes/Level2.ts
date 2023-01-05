@@ -5,16 +5,10 @@ import { propertyMap } from "../utils";
 import BaseLevel from "./BaseLevel";
 
 export default class Level2 extends BaseLevel {
-  player?: Player;
   platforms: MovingPlatform[] = [];
 
   constructor() {
     super("Level2Scene");
-  }
-
-  killCharacters() {
-    this.player?.die();
-    this.player = undefined;
   }
 
   killPLayer() {

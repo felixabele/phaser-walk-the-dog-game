@@ -52,7 +52,11 @@ export default class Monster {
     this.sprite.body.setVelocityX(this.walkingSpeed);
   }
 
-  public die() {
+  public die(afterDeath?: () => void) {
     this.sprite.destroy();
+
+    if (afterDeath) {
+      afterDeath();
+    }
   }
 }

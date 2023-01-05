@@ -13,7 +13,7 @@ export default class Chicken extends Monster {
     },
   };
 
-  bouncingSpeed: number = 1;
+  bouncingSpeed?: number = 1;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, "chicken", x, y);
@@ -26,7 +26,6 @@ export default class Chicken extends Monster {
       .setBounce(this.bouncingSpeed)
       .setScale(0.5, 0.5)
       .setFlipX(true)
-      .setBounce(this.bouncingSpeed)
       .setCollideWorldBounds(false);
 
     anims.create({

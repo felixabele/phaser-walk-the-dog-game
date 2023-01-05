@@ -4,9 +4,6 @@ import Chicken from "../chicken";
 import BaseLevel from "./BaseLevel";
 
 export default class Level1 extends BaseLevel {
-  player?: Player;
-  chicken?: Chicken;
-
   constructor() {
     super("Level1Scene");
   }
@@ -14,14 +11,6 @@ export default class Level1 extends BaseLevel {
   preload() {
     this.load.image("tiles", "assets/titles_01.png");
     this.load.tilemapTiledJSON("map", "assets/level_1_tiles.json");
-    this.load.spritesheet(Chicken.spritesheet);
-  }
-
-  killCharacters() {
-    this.player?.die();
-    this.player = undefined;
-    this.chicken?.die();
-    this.chicken = undefined;
   }
 
   killPLayer() {
@@ -34,27 +23,6 @@ export default class Level1 extends BaseLevel {
     this.showSuccess("Level2Scene");
   }
 
-  addChicken(collisionLayer: Phaser.Tilemaps.TilemapLayer, xPosition: number) {
-    this.chicken = new Chicken(this, xPosition, 0);
-    this.physics.add.collider(
-      this.chicken.sprite,
-      collisionLayer,
-      (_, tile) => {
-        if (tile.properties.kills) {
-          this.chicken?.die();
-          this.chicken = undefined;
-          this.addChicken(collisionLayer, xPosition);
-        }
-      }
-    );
-
-    if (this.player) {
-      this.physics.add.overlap(this.player.sprite, this.chicken.sprite, () =>
-        this.killPLayer()
-      );
-    }
-  }
-
   addColliders(layer: Phaser.Tilemaps.TilemapLayer) {
     if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
@@ -63,6 +31,16 @@ export default class Level1 extends BaseLevel {
       }
     };
     this.physics.add.collider(this.player.sprite, layer, collisionFn);
+  }
+
+  addChicken(chicken: any, collisionLayer: Phaser.Tilemaps.TilemapLayer) {
+    this.addMonster(
+      Chicken,
+      collisionLayer,
+      chicken.x,
+      () => this.addChicken(chicken, collisionLayer),
+      () => this.killPLayer()
+    );
   }
 
   create() {
@@ -82,10 +60,9 @@ export default class Level1 extends BaseLevel {
       camera.startFollow(this.player.sprite, true, 0.08, 0.08);
       this.addColliders(collisionLayer);
 
-      map.findObject("Chicken", (chicken) => {
-        this.addChicken(collisionLayer, chicken.x);
-      });
-
+      map.findObject("Chicken", (chicken) =>
+        this.addChicken(chicken, collisionLayer)
+      );
       this.addLevelEnd(map, this.player, () => this.levelEnd());
     });
   }
@@ -97,7 +74,5 @@ export default class Level1 extends BaseLevel {
       this.cursors.right.isDown,
       this.cursors.up.isDown || this.cursors.space.isDown
     );
-
-    this.chicken?.update();
   }
 }

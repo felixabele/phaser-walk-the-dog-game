@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import Button from "../button";
+import Fighter from "../fighter";
+import Chicken from "../chicken";
 import Player from "../player";
 import { getScreenCenter, setScreenText } from "../screen";
 
@@ -14,6 +16,8 @@ export default class Start extends Phaser.Scene {
     this.load.tilemapTiledJSON("map2", "assets/level_2_tiles.json");
     this.load.image("mountains", "assets/bg_mountains.png");
     this.load.spritesheet(Player.spritesheet);
+    this.load.spritesheet(Fighter.spritesheet);
+    this.load.spritesheet(Chicken.spritesheet);
 
     this.load.atlas(
       "clouds",

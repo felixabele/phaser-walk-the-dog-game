@@ -4,7 +4,6 @@ import BaseLevel from "./BaseLevel";
 import Ball from "../ball";
 
 export default class Level3 extends BaseLevel {
-  player?: Player;
   collisionLayer?: Phaser.Tilemaps.TilemapLayer;
 
   constructor() {

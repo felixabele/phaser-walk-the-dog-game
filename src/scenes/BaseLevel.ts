@@ -1,11 +1,49 @@
 import Button from "../button";
+import Fighter from "../fighter";
+import Chicken from "../chicken";
 import Player from "../player";
 import { getScreenCenter, setScreenText } from "../screen";
 import Clouds from "./Clouds";
 
 export default class BaseLevel extends Phaser.Scene {
+  player?: Player;
   clouds?: Clouds;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  monsters: Chicken[] | Fighter[] = [];
+
+  addMonster(
+    Klass: typeof Chicken | typeof Fighter,
+    collisionLayer: Phaser.Tilemaps.TilemapLayer,
+    xPosition: number,
+    onMonsterDefeat?: () => void,
+    onPlayerDefeat?: () => void
+  ) {
+    const monster = new Klass(this, xPosition, 0);
+    this.physics.add.collider(monster.sprite, collisionLayer, (_, tile) => {
+      if (tile.properties.kills) {
+        monster?.die(onMonsterDefeat);
+        const index = this.monsters.findIndex((m) => m === monster);
+        this.monsters.splice(index, 1);
+      }
+    });
+
+    this.monsters.push(monster);
+
+    if (this.player && onPlayerDefeat) {
+      this.physics.add.overlap(
+        this.player.sprite,
+        monster.sprite,
+        onPlayerDefeat
+      );
+    }
+  }
+
+  killCharacters() {
+    this.player?.die();
+    this.player = undefined;
+    this.monsters.forEach((monster) => monster.die());
+    this.monsters = [];
+  }
 
   showGameOver() {
     const { x, y } = getScreenCenter(this);
@@ -59,5 +97,6 @@ export default class BaseLevel extends Phaser.Scene {
 
   update() {
     this.clouds?.update();
+    this.monsters.forEach((monster) => monster.update());
   }
 }
