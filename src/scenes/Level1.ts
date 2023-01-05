@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import Player from "../player";
 import Chicken from "../chicken";
-import Clouds from "./Clouds";
 import BaseLevel from "./BaseLevel";
 
 export default class Level1 extends BaseLevel {
@@ -15,7 +14,6 @@ export default class Level1 extends BaseLevel {
   preload() {
     this.load.image("tiles", "assets/titles_01.png");
     this.load.tilemapTiledJSON("map", "assets/level_1_tiles.json");
-    this.load.spritesheet(Player.spritesheet);
     this.load.spritesheet(Chicken.spritesheet);
   }
 

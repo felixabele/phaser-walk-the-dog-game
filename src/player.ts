@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import Ball from "./ball";
 
 export default class Player {
   static spritesheet = {
@@ -13,9 +14,12 @@ export default class Player {
 
   public scene: Phaser.Scene;
   public sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  public orientation: "left" | "right" = "right";
+  public balls: Ball[];
 
   constructor(scene: Phaser.Scene, x: number = 0, y: number = 0) {
     this.scene = scene;
+    this.balls = [];
     const { anims, physics } = scene;
 
     this.sprite = physics.add
@@ -69,13 +73,27 @@ export default class Player {
     }
   }
 
+  public shoot(): void {
+    if (!this.balls.length) return;
+    const ball = this.balls.pop();
+    ball?.shoot();
+  }
+
+  public addBall(ball: Ball) {
+    this.balls.push(ball);
+    const xPos = 40 + this.balls.length * 14;
+    ball.addToInventary(xPos);
+  }
+
   private walkLeft(): void {
+    this.orientation = "left";
     this.sprite.flipX = false;
     this.sprite.body.setVelocityX(-120);
     this.sprite.play({ key: "walk", repeat: 1 }, true);
   }
 
   private walkRight(): void {
+    this.orientation = "right";
     this.sprite.play({ key: "walk", repeat: 1 }, true);
     this.sprite.flipX = true;
     this.sprite.body.setVelocityX(120);

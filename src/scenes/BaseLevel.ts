@@ -25,7 +25,11 @@ export default class BaseLevel extends Phaser.Scene {
     }
   }
 
-  addLevelEnd(map: Phaser.Tilemaps.Tilemap, player: Player, onEnd: () => void) {
+  addLevelEnd(
+    map: Phaser.Tilemaps.Tilemap,
+    player: Player,
+    onEnd?: () => void
+  ) {
     const endLayer = this.physics.add.staticGroup();
     const endObjects = map.getObjectLayer("End").objects;
     if (!endObjects.length) throw new Error("End Object missing");

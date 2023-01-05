@@ -10,6 +10,7 @@ export default class Start extends Phaser.Scene {
 
   preload() {
     this.load.image("tiles2", "assets/titles_01.png");
+    this.load.image("ball", "assets/ball.png");
     this.load.tilemapTiledJSON("map2", "assets/level_2_tiles.json");
     this.load.image("mountains", "assets/bg_mountains.png");
     this.load.spritesheet(Player.spritesheet);
@@ -36,6 +37,10 @@ export default class Start extends Phaser.Scene {
 
     new Button(x, y + 120, "Starten Level 2", this, () =>
       this.scene.start("Level2Scene")
+    );
+
+    new Button(x, y + 170, "Starten Level 3", this, () =>
+      this.scene.start("Level3Scene")
     );
   }
 }
