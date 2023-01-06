@@ -1,13 +1,14 @@
 import Phaser from "phaser";
 import Player from "./player";
+import BaseLevel from "./scenes/BaseLevel";
 
 export default class ObjectGenerator {
-  public scene: Phaser.Scene;
+  public scene: BaseLevel;
   public map: Phaser.Tilemaps.Tilemap;
 
-  constructor(scene: Phaser.Scene, map: Phaser.Tilemaps.Tilemap) {
+  constructor(scene: BaseLevel) {
     this.scene = scene;
-    this.map = map;
+    this.map = this.scene.map;
   }
 
   public createPlayer(): Player {
@@ -15,7 +16,8 @@ export default class ObjectGenerator {
     return new Player(this.scene, spawnPoint.x, spawnPoint.y);
   }
 
-  public findObjects(name: string): object[] {
-    return this.map.getObjectLayer(name).objects;
+  public findObjects(name: string): Phaser.Types.Tilemaps.TiledObject[] {
+    const layer = this.map.getObjectLayer(name);
+    return layer ? layer.objects : [];
   }
 }

@@ -46,6 +46,10 @@ export default class Ball {
     }
   }
 
+  public isDeadly(): boolean {
+    return this.sprite.body.velocity.x > 0;
+  }
+
   private pickUp() {
     if (this.isPickedUp) return;
     this.sprite.setVisible(false).setY(-100);
