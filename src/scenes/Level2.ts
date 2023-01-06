@@ -11,11 +11,10 @@ export default class Level2 extends BaseLevel {
     super("Level2Scene");
   }
 
-  killPLayer() {
+  killPlayer() {
     this.killCharacters();
     this.showGameOver();
   }
-
   levelEnd() {
     this.killCharacters();
     this.showSuccess();
@@ -25,7 +24,7 @@ export default class Level2 extends BaseLevel {
     if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
-        this.killPLayer();
+        this.killPlayer();
       }
     };
     this.physics.add.collider(this.player.sprite, layer, collisionFn);

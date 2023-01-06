@@ -15,8 +15,13 @@ export default class Chicken extends Monster {
 
   bouncingSpeed?: number = 1;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, "chicken", x, y);
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    afterDeath?: () => void
+  ) {
+    super(scene, "chicken", x, y, afterDeath);
     const { anims } = this.scene;
 
     this.walkingSpeed = randomInteger(70, 120);
@@ -31,6 +36,12 @@ export default class Chicken extends Monster {
     anims.create({
       key: "chicken-walk",
       frames: anims.generateFrameNumbers("chicken", { frames: [0, 1, 2, 3] }),
+      frameRate: 6,
+    });
+
+    anims.create({
+      key: "chicken-die",
+      frames: anims.generateFrameNumbers("chicken", { frames: [2, 3] }),
       frameRate: 6,
     });
   }

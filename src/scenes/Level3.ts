@@ -2,12 +2,18 @@ import Phaser from "phaser";
 import Player from "../player";
 import BaseLevel from "./BaseLevel";
 import Ball from "../ball";
+import Fighter from "../fighter";
 
 export default class Level3 extends BaseLevel {
   collisionLayer?: Phaser.Tilemaps.TilemapLayer;
 
   constructor() {
     super("Level3Scene");
+  }
+
+  killPlayer() {
+    this.killCharacters();
+    this.showGameOver();
   }
 
   preload() {
@@ -17,6 +23,17 @@ export default class Level3 extends BaseLevel {
   addColliders() {
     if (!this.player || !this.collisionLayer) return;
     this.physics.add.collider(this.player.sprite, this.collisionLayer);
+  }
+
+  addFighter() {
+    if (!this.collisionLayer) return;
+    this.addMonster(
+      Fighter,
+      this.collisionLayer,
+      900,
+      () => this.addFighter(),
+      () => this.killPlayer()
+    );
   }
 
   create() {
@@ -41,7 +58,16 @@ export default class Level3 extends BaseLevel {
         new Ball(this, this.collisionLayer, this.player, 600, 0);
       }
 
-      this.input.on("pointerup", () => this.player?.shoot(), this);
+      this.addFighter();
+
+      this.input.on(
+        "pointerup",
+        () => {
+          const ball = this.player?.shoot();
+          this.addMonsterHittest(ball);
+        },
+        this
+      );
       this.addColliders();
       this.addLevelEnd(map, this.player);
     });

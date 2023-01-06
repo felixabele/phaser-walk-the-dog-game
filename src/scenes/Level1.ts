@@ -13,7 +13,7 @@ export default class Level1 extends BaseLevel {
     this.load.tilemapTiledJSON("map", "assets/level_1_tiles.json");
   }
 
-  killPLayer() {
+  killPlayer() {
     this.killCharacters();
     this.showGameOver();
   }
@@ -27,7 +27,7 @@ export default class Level1 extends BaseLevel {
     if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
-        this.killPLayer();
+        this.killPlayer();
       }
     };
     this.physics.add.collider(this.player.sprite, layer, collisionFn);
@@ -39,7 +39,7 @@ export default class Level1 extends BaseLevel {
       collisionLayer,
       chicken.x,
       () => this.addChicken(chicken, collisionLayer),
-      () => this.killPLayer()
+      () => this.killPlayer()
     );
   }
 

@@ -16,6 +16,7 @@ export default class Player {
   public sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public orientation: "left" | "right" = "right";
   public balls: Ball[];
+  public isDead: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number = 0, y: number = 0) {
     this.scene = scene;
@@ -49,6 +50,8 @@ export default class Player {
   }
 
   public update(goLeft: boolean, goRight: boolean, jump: boolean): void {
+    if (this.isDead) return;
+
     const { x, y } = this.sprite.body.velocity;
     const isJumping = y !== 0;
     const isWalking = x !== 0;
@@ -73,10 +76,11 @@ export default class Player {
     }
   }
 
-  public shoot(): void {
-    if (!this.balls.length) return;
+  public shoot(): Ball | undefined {
+    if (!this.balls.length || this.isDead) return;
     const ball = this.balls.pop();
     ball?.shoot();
+    return ball;
   }
 
   public addBall(ball: Ball) {
@@ -107,6 +111,7 @@ export default class Player {
   }
 
   public die() {
+    this.isDead = true;
     this.sprite.destroy();
   }
 }

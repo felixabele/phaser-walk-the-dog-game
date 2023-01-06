@@ -1,15 +1,22 @@
+import { Enemy } from "./../types";
 import Button from "../button";
 import Fighter from "../fighter";
 import Chicken from "../chicken";
 import Player from "../player";
 import { getScreenCenter, setScreenText } from "../screen";
 import Clouds from "./Clouds";
+import Ball from "../ball";
 
 export default class BaseLevel extends Phaser.Scene {
   player?: Player;
   clouds?: Clouds;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   monsters: Chicken[] | Fighter[] = [];
+
+  killMonster(monster: Enemy) {
+    this.monsters = this.monsters.filter((m) => m !== monster);
+    monster?.die();
+  }
 
   addMonster(
     Klass: typeof Chicken | typeof Fighter,
@@ -18,12 +25,11 @@ export default class BaseLevel extends Phaser.Scene {
     onMonsterDefeat?: () => void,
     onPlayerDefeat?: () => void
   ) {
-    const monster = new Klass(this, xPosition, 0);
+    if (this.player?.isDead) return;
+    const monster = new Klass(this, xPosition, 0, onMonsterDefeat);
     this.physics.add.collider(monster.sprite, collisionLayer, (_, tile) => {
       if (tile.properties.kills) {
-        monster?.die(onMonsterDefeat);
-        const index = this.monsters.findIndex((m) => m === monster);
-        this.monsters.splice(index, 1);
+        this.killMonster(monster);
       }
     });
 
@@ -38,10 +44,20 @@ export default class BaseLevel extends Phaser.Scene {
     }
   }
 
+  addMonsterHittest(ball?: Ball) {
+    if (!ball || ball.isPickedUp) return;
+
+    this.monsters.forEach((monster) => {
+      this.physics.add.collider(ball.sprite, monster.sprite, () =>
+        this.killMonster(monster)
+      );
+    });
+  }
+
   killCharacters() {
     this.player?.die();
     this.player = undefined;
-    this.monsters.forEach((monster) => monster.die());
+    this.monsters.forEach((monster) => monster.die(true));
     this.monsters = [];
   }
 
