@@ -10,12 +10,14 @@ import ObjectGenerator from "../objectGenerator";
 
 export default class BaseLevel extends Phaser.Scene {
   player?: Player;
-  collisionLayer?: Phaser.Tilemaps.TilemapLayer;
-  map?: Phaser.Tilemaps.Tilemap;
   clouds?: Clouds;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  monsters: Chicken[] | Fighter[] = [];
   nextLevel?: string;
+  monsters: Chicken[] | Fighter[] = [];
+
+  cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  map!: Phaser.Tilemaps.Tilemap;
+  objectGenerator!: ObjectGenerator;
+  collisionLayer!: Phaser.Tilemaps.TilemapLayer;
 
   killMonster(monster: Enemy) {
     this.monsters = this.monsters.filter((m) => m !== monster);
@@ -24,18 +26,21 @@ export default class BaseLevel extends Phaser.Scene {
 
   addMonster(
     Klass: typeof Chicken | typeof Fighter,
-    collisionLayer: Phaser.Tilemaps.TilemapLayer,
     xPosition: number,
     onMonsterDefeat?: () => void,
     onPlayerDefeat?: () => void
   ) {
     if (this.player?.isDead) return;
     const monster = new Klass(this, xPosition, 0, onMonsterDefeat);
-    this.physics.add.collider(monster.sprite, collisionLayer, (_, tile) => {
-      if (tile.properties.kills) {
-        this.killMonster(monster);
+    this.physics.add.collider(
+      monster.sprite,
+      this.collisionLayer,
+      (_, tile) => {
+        if (tile.properties.kills) {
+          this.killMonster(monster);
+        }
       }
-    });
+    );
 
     this.monsters.push(monster);
 
@@ -130,14 +135,14 @@ export default class BaseLevel extends Phaser.Scene {
 
     this.map = this.make.tilemap({ key: mapKey });
     const camera = this.cameras.main;
-    const objectGenerator = new ObjectGenerator(this, this.map);
+    this.objectGenerator = new ObjectGenerator(this, this.map);
     camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     const tileset = this.map.addTilesetImage(tilesetName, tilesetKey);
     this.collisionLayer = this.map
       .createLayer("collision", tileset, 0, 0)
       .setCollisionByProperty({ collides: true });
 
-    this.player = objectGenerator.createPlayer();
+    this.player = this.objectGenerator.createPlayer();
     camera.startFollow(this.player.sprite, true, 0.08, 0.08);
     this.addLevelEnd(this.map, this.player, () => this.levelEnd());
   }

@@ -14,4 +14,8 @@ export default class ObjectGenerator {
     const spawnPoint = this.map.findObject("Spawn", () => true);
     return new Player(this.scene, spawnPoint.x, spawnPoint.y);
   }
+
+  public findObjects(name: string): object[] {
+    return this.map.getObjectLayer(name).objects;
+  }
 }

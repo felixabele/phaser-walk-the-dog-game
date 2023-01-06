@@ -16,7 +16,7 @@ export default class Level2 extends BaseLevel {
   }
 
   addColliders() {
-    if (!this.player || !this.collisionLayer) return;
+    if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
         this.killPlayer();
@@ -29,8 +29,9 @@ export default class Level2 extends BaseLevel {
     );
   }
 
-  addPlatforms(platformObjects: Phaser.Types.Tilemaps.TiledObject[]) {
+  addPlatforms() {
     if (!this.player) return;
+    const platformObjects = this.objectGenerator.findObjects("platforms");
     this.platforms = platformObjects.map((platformObj: any) => {
       const config = propertyMap(platformObj.properties);
       return new MovingPlatform(
@@ -45,11 +46,7 @@ export default class Level2 extends BaseLevel {
 
   create() {
     super.create("map2", "tiles");
-    if (!this.player || !this.map || !this.collisionLayer)
-      throw new Error("Player or map not generated");
-
-    const platformObjects = this.map.getObjectLayer("platforms").objects;
-    this.addPlatforms(platformObjects);
+    this.addPlatforms();
     this.addColliders();
   }
 

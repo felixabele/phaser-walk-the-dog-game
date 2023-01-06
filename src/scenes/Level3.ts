@@ -13,15 +13,13 @@ export default class Level3 extends BaseLevel {
   }
 
   addColliders() {
-    if (!this.player || !this.collisionLayer) return;
+    if (!this.player) return;
     this.physics.add.collider(this.player.sprite, this.collisionLayer);
   }
 
   addFighter() {
-    if (!this.collisionLayer) return;
     this.addMonster(
       Fighter,
-      this.collisionLayer,
       900,
       () => this.addFighter(),
       () => this.killPlayer()
@@ -30,8 +28,7 @@ export default class Level3 extends BaseLevel {
 
   create() {
     super.create("map3", "tiles");
-    if (!this.player || !this.map)
-      throw new Error("Player or map not generated");
+    if (!this.player) throw new Error("Player or map not generated");
 
     if (this.collisionLayer) {
       new Ball(this, this.collisionLayer, this.player, 100, 0);

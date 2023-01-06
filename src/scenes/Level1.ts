@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import Chicken from "../chicken";
 import BaseLevel from "./BaseLevel";
 
@@ -12,13 +11,8 @@ export default class Level1 extends BaseLevel {
     this.load.tilemapTiledJSON("map1", "assets/level_1_tiles.json");
   }
 
-  killPlayer() {
-    this.killCharacters();
-    this.showGameOver();
-  }
-
   addColliders() {
-    if (!this.player || !this.collisionLayer) return;
+    if (!this.player) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
         this.killPlayer();
@@ -31,25 +25,22 @@ export default class Level1 extends BaseLevel {
     );
   }
 
-  addChicken(chicken: any) {
-    if (!this.collisionLayer) return;
-    this.addMonster(
-      Chicken,
-      this.collisionLayer,
-      chicken.x,
-      () => this.addChicken(chicken),
-      () => this.killPlayer()
-    );
+  addChicken() {
+    const chicken = this.objectGenerator.findObjects("Chicken");
+    chicken.forEach((chick) => {
+      this.addMonster(
+        Chicken,
+        chick.x,
+        () => this.addChicken(chick),
+        () => this.killPlayer()
+      );
+    });
   }
 
   create() {
     super.create("map1", "tiles", "level");
-    if (!this.player || !this.map || !this.collisionLayer)
-      throw new Error("Player or map not generated");
-
     this.addColliders();
-    const chicken = this.map.findObject("Chicken", () => true);
-    this.addChicken(chicken);
+    this.addChicken();
   }
 
   update() {
