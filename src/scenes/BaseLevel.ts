@@ -1,10 +1,9 @@
 import { Enemy } from "./../types";
 import { propertyMap } from "../utils";
-import Button from "../button";
 import Fighter from "../fighter";
+import SceneDisplay from "../sceneDisplay";
 import Chicken from "../chicken";
 import Player from "../player";
-import { getScreenCenter, setScreenText } from "../screen";
 import Clouds from "./Clouds";
 import Ball from "../ball";
 import ObjectGenerator from "../objectGenerator";
@@ -21,6 +20,7 @@ export default class BaseLevel extends Phaser.Scene {
   map!: Phaser.Tilemaps.Tilemap;
   objectGenerator!: ObjectGenerator;
   collisionLayer!: Phaser.Tilemaps.TilemapLayer;
+  sceneDisplay!: SceneDisplay;
 
   killMonster(monster: Enemy) {
     this.monsters = this.monsters.filter((m) => m !== monster);
@@ -113,46 +113,25 @@ export default class BaseLevel extends Phaser.Scene {
     this.monsters = [];
   }
 
-  showGameOver() {
-    const { x, y } = getScreenCenter(this);
-    setScreenText("Game Over", this);
-    new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
-  }
-
   levelEnd() {
     this.killCharacters();
-    this.showSuccess(this.nextLevel);
+    this.sceneDisplay.showSuccess(this.nextLevel);
   }
 
   killPlayer() {
     this.killCharacters();
-    this.showGameOver();
+    this.sceneDisplay.showGameOver();
   }
 
-  showSuccess(nextLevel?: string) {
-    const { x, y } = getScreenCenter(this);
-    setScreenText("!!! Gewonnen !!!", this);
-    new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
-
-    if (nextLevel) {
-      new Button(x, y + 120, "Nächstes Level", this, () =>
-        this.scene.start(nextLevel)
-      );
-    }
-  }
-
-  addLevelEnd(
-    map: Phaser.Tilemaps.Tilemap,
-    player: Player,
-    onEnd?: () => void
-  ) {
+  addLevelEnd(map: Phaser.Tilemaps.Tilemap, onEnd?: () => void) {
+    if (!this.player) return;
     const endLayer = this.physics.add.staticGroup();
     const endObjects = map.getObjectLayer("End").objects;
     if (!endObjects.length) throw new Error("End Object missing");
     const endObj = endLayer
       .create(endObjects[0].x, endObjects[0].y, "end")
       .setVisible(false);
-    this.physics.add.overlap(player.sprite, endObj, onEnd);
+    this.physics.add.overlap(this.player.sprite, endObj, onEnd);
   }
 
   createBackground() {
@@ -198,6 +177,7 @@ export default class BaseLevel extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.createBackground();
     this.clouds = new Clouds(this);
+    this.sceneDisplay = new SceneDisplay(this);
 
     this.map = this.make.tilemap({ key: mapKey });
     const camera = this.cameras.main;
@@ -212,7 +192,7 @@ export default class BaseLevel extends Phaser.Scene {
     this.addColliders();
     camera.startFollow(this.player.sprite, true, 0.08, 0.08);
 
-    this.addLevelEnd(this.map, this.player, () => this.levelEnd());
+    this.addLevelEnd(this.map, () => this.levelEnd());
     this.addShotBinding();
     this.addBalls();
     this.addPlatforms();

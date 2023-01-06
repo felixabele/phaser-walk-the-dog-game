@@ -21,14 +21,18 @@ export default class Player {
   constructor(scene: Phaser.Scene, x: number = 0, y: number = 0) {
     this.scene = scene;
     this.balls = [];
-    const { anims, physics } = scene;
-
-    this.sprite = physics.add
+    this.sprite = scene.physics.add
       .sprite(x, y, "player", 0)
       .setScale(0.25, 0.25)
       .setSize(300, 316)
       .setFlipX(true)
       .setCollideWorldBounds(false);
+
+    this.initAnmations();
+  }
+
+  private initAnmations(): void {
+    const { anims } = this.scene;
 
     anims.create({
       key: "walk",
