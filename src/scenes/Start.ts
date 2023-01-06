@@ -11,9 +11,8 @@ export default class Start extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("tiles2", "assets/titles_01.png");
+    this.load.image("tiles", "assets/titles_01.png");
     this.load.image("ball", "assets/ball.png");
-    this.load.tilemapTiledJSON("map2", "assets/level_2_tiles.json");
     this.load.image("mountains", "assets/bg_mountains.png");
     this.load.spritesheet(Player.spritesheet);
     this.load.spritesheet(Fighter.spritesheet);

@@ -1,16 +1,15 @@
 import Phaser from "phaser";
-import Player from "../player";
 import Chicken from "../chicken";
 import BaseLevel from "./BaseLevel";
 
 export default class Level1 extends BaseLevel {
   constructor() {
     super("Level1Scene");
+    this.nextLevel = "Level2Scene";
   }
 
   preload() {
-    this.load.image("tiles", "assets/titles_01.png");
-    this.load.tilemapTiledJSON("map", "assets/level_1_tiles.json");
+    this.load.tilemapTiledJSON("map1", "assets/level_1_tiles.json");
   }
 
   killPlayer() {
@@ -18,53 +17,39 @@ export default class Level1 extends BaseLevel {
     this.showGameOver();
   }
 
-  levelEnd() {
-    this.killCharacters();
-    this.showSuccess("Level2Scene");
-  }
-
-  addColliders(layer: Phaser.Tilemaps.TilemapLayer) {
-    if (!this.player) return;
+  addColliders() {
+    if (!this.player || !this.collisionLayer) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
         this.killPlayer();
       }
     };
-    this.physics.add.collider(this.player.sprite, layer, collisionFn);
+    this.physics.add.collider(
+      this.player.sprite,
+      this.collisionLayer,
+      collisionFn
+    );
   }
 
-  addChicken(chicken: any, collisionLayer: Phaser.Tilemaps.TilemapLayer) {
+  addChicken(chicken: any) {
+    if (!this.collisionLayer) return;
     this.addMonster(
       Chicken,
-      collisionLayer,
+      this.collisionLayer,
       chicken.x,
-      () => this.addChicken(chicken, collisionLayer),
+      () => this.addChicken(chicken),
       () => this.killPlayer()
     );
   }
 
   create() {
-    const map = this.make.tilemap({ key: "map" });
-    const camera = this.cameras.main;
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    super.create("map1", "tiles", "level");
+    if (!this.player || !this.map || !this.collisionLayer)
+      throw new Error("Player or map not generated");
 
-    super.create();
-
-    const tileset = map.addTilesetImage("level", "tiles");
-    const collisionLayer = map
-      .createLayer("collision", tileset, 0, 0)
-      .setCollisionByProperty({ collides: true });
-
-    map.findObject("Spawn", (spawnPoint) => {
-      this.player = new Player(this, spawnPoint.x, spawnPoint.y);
-      camera.startFollow(this.player.sprite, true, 0.08, 0.08);
-      this.addColliders(collisionLayer);
-
-      map.findObject("Chicken", (chicken) =>
-        this.addChicken(chicken, collisionLayer)
-      );
-      this.addLevelEnd(map, this.player, () => this.levelEnd());
-    });
+    this.addColliders();
+    const chicken = this.map.findObject("Chicken", () => true);
+    this.addChicken(chicken);
   }
 
   update() {

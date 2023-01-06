@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import Player from "../player";
 import MovingPlatform from "../movingPlatform";
 import { propertyMap } from "../utils";
 import BaseLevel from "./BaseLevel";
@@ -9,25 +8,25 @@ export default class Level2 extends BaseLevel {
 
   constructor() {
     super("Level2Scene");
+    this.nextLevel = "Level3Scene";
   }
 
-  killPlayer() {
-    this.killCharacters();
-    this.showGameOver();
-  }
-  levelEnd() {
-    this.killCharacters();
-    this.showSuccess();
+  preload() {
+    this.load.tilemapTiledJSON("map2", "assets/level_2_tiles.json");
   }
 
-  addColliders(layer: Phaser.Tilemaps.TilemapLayer) {
-    if (!this.player) return;
+  addColliders() {
+    if (!this.player || !this.collisionLayer) return;
     const collisionFn = (_: any, tile: any) => {
       if (tile.properties.kills) {
         this.killPlayer();
       }
     };
-    this.physics.add.collider(this.player.sprite, layer, collisionFn);
+    this.physics.add.collider(
+      this.player.sprite,
+      this.collisionLayer,
+      collisionFn
+    );
   }
 
   addPlatforms(platformObjects: Phaser.Types.Tilemaps.TiledObject[]) {
@@ -45,26 +44,13 @@ export default class Level2 extends BaseLevel {
   }
 
   create() {
-    const map = this.make.tilemap({ key: "map2" });
-    const camera = this.cameras.main;
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    super.create("map2", "tiles");
+    if (!this.player || !this.map || !this.collisionLayer)
+      throw new Error("Player or map not generated");
 
-    super.create();
-
-    const tileset = map.addTilesetImage("titles_01", "tiles2");
-    const collisionLayer = map
-      .createLayer("collision", tileset, 0, 0)
-      .setCollisionByProperty({ collides: true });
-
-    const platformObjects = map.getObjectLayer("platforms").objects;
-
-    map.findObject("Spawn", (spawnPoint) => {
-      this.player = new Player(this, spawnPoint.x, spawnPoint.y);
-      this.addPlatforms(platformObjects);
-      camera.startFollow(this.player.sprite, true, 0.08, 0.08);
-      this.addColliders(collisionLayer);
-      this.addLevelEnd(map, this.player, () => this.levelEnd());
-    });
+    const platformObjects = this.map.getObjectLayer("platforms").objects;
+    this.addPlatforms(platformObjects);
+    this.addColliders();
   }
 
   update() {

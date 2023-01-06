@@ -6,12 +6,16 @@ import Player from "../player";
 import { getScreenCenter, setScreenText } from "../screen";
 import Clouds from "./Clouds";
 import Ball from "../ball";
+import ObjectGenerator from "../objectGenerator";
 
 export default class BaseLevel extends Phaser.Scene {
   player?: Player;
+  collisionLayer?: Phaser.Tilemaps.TilemapLayer;
+  map?: Phaser.Tilemaps.Tilemap;
   clouds?: Clouds;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   monsters: Chicken[] | Fighter[] = [];
+  nextLevel?: string;
 
   killMonster(monster: Enemy) {
     this.monsters = this.monsters.filter((m) => m !== monster);
@@ -67,6 +71,16 @@ export default class BaseLevel extends Phaser.Scene {
     new Button(x, y + 70, "Neustarten", this, () => this.scene.restart());
   }
 
+  levelEnd() {
+    this.killCharacters();
+    this.showSuccess(this.nextLevel);
+  }
+
+  killPlayer() {
+    this.killCharacters();
+    this.showGameOver();
+  }
+
   showSuccess(nextLevel?: string) {
     const { x, y } = getScreenCenter(this);
     setScreenText("!!! Gewonnen !!!", this);
@@ -105,10 +119,27 @@ export default class BaseLevel extends Phaser.Scene {
       .setY(height + 160);
   }
 
-  create() {
+  create(
+    mapKey: string,
+    tilesetKey: string,
+    tilesetName: string = "titles_01"
+  ) {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.createBackground();
     this.clouds = new Clouds(this);
+
+    this.map = this.make.tilemap({ key: mapKey });
+    const camera = this.cameras.main;
+    const objectGenerator = new ObjectGenerator(this, this.map);
+    camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    const tileset = this.map.addTilesetImage(tilesetName, tilesetKey);
+    this.collisionLayer = this.map
+      .createLayer("collision", tileset, 0, 0)
+      .setCollisionByProperty({ collides: true });
+
+    this.player = objectGenerator.createPlayer();
+    camera.startFollow(this.player.sprite, true, 0.08, 0.08);
+    this.addLevelEnd(this.map, this.player, () => this.levelEnd());
   }
 
   update() {
