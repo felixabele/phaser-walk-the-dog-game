@@ -15,7 +15,8 @@ export default class Start extends Phaser.Scene {
     this.load.image("ball", "assets/ball.png");
     this.load.image("mountains", "assets/bg_mountains.png");
     this.load.spritesheet(Player.spritesheet);
-    this.load.spritesheet(Fighter.spritesheet);
+    this.load.spritesheet(Fighter.spritesheet2);
+    this.load.spritesheet(Fighter.spritesheet3);
     this.load.spritesheet(Chicken.spritesheet);
 
     this.load.atlas(
