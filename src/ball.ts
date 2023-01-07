@@ -47,7 +47,7 @@ export default class Ball {
   }
 
   public isDeadly(): boolean {
-    return this.sprite.body.velocity.x > 0;
+    return this.sprite.body.velocity.x > 70;
   }
 
   private pickUp() {

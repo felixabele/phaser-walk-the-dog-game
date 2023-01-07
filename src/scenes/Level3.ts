@@ -11,6 +11,6 @@ export default class Level3 extends BaseLevel {
   }
 
   create() {
-    super.create("map3", "tiles");
+    super.create("map3", "tiles", "titles_01", "galleria", false);
   }
 }

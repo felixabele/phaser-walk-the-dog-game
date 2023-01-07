@@ -8,6 +8,7 @@ import Clouds from "./Clouds";
 import Ball from "../ball";
 import ObjectGenerator from "../objectGenerator";
 import MovingPlatform from "../movingPlatform";
+import createBackground from "./createBackground";
 
 export default class BaseLevel extends Phaser.Scene {
   player?: Player;
@@ -134,18 +135,6 @@ export default class BaseLevel extends Phaser.Scene {
     this.physics.add.overlap(this.player.sprite, endObj, onEnd);
   }
 
-  createBackground() {
-    const height = this.scale.height;
-    this.add
-      .image(0, 0, "mountains")
-      .setOrigin(0, 1)
-      .setScrollFactor(0.75)
-      .setDepth(0)
-      .setScale(0.5)
-      .setX(500)
-      .setY(height + 160);
-  }
-
   addShotBinding() {
     this.input.keyboard.on("keydown", (event: any) => {
       if (["Enter"].includes(event.key)) {
@@ -172,11 +161,15 @@ export default class BaseLevel extends Phaser.Scene {
   create(
     mapKey: string,
     tilesetKey: string,
-    tilesetName: string = "titles_01"
+    tilesetName: string = "titles_01",
+    background: string = "mountains",
+    loadClouds: boolean = true
   ) {
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.createBackground();
-    this.clouds = new Clouds(this);
+    createBackground(background, this);
+    if (loadClouds) {
+      this.clouds = new Clouds(this);
+    }
     this.sceneDisplay = new SceneDisplay(this);
 
     this.map = this.make.tilemap({ key: mapKey });
