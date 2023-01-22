@@ -3,7 +3,9 @@ import Button from "../button";
 import Fighter from "../fighter";
 import Chicken from "../chicken";
 import Player from "../player";
+import SwimmingPlayer from "../swimmingPlayer";
 import { getScreenCenter, setScreenText } from "../screen";
+import SeeMonster from "../seeMonster";
 
 export default class Start extends Phaser.Scene {
   constructor() {
@@ -14,11 +16,14 @@ export default class Start extends Phaser.Scene {
     this.load.image("tiles", "assets/titles_01.png");
     this.load.image("ball", "assets/ball.png");
     this.load.image("mountains", "assets/bg_mountains.png");
-    this.load.image("galleria", "assets/bg_galleria.png");
     this.load.spritesheet(Player.spritesheet);
+    this.load.spritesheet(SwimmingPlayer.spritesheet);
+    
     this.load.spritesheet(Fighter.spritesheet2);
     this.load.spritesheet(Fighter.spritesheet3);
     this.load.spritesheet(Chicken.spritesheet);
+    this.load.spritesheet(SeeMonster.spritesheetFish);
+    this.load.spritesheet(SeeMonster.spritesheetKraken);
 
     this.load.atlas(
       "clouds",
@@ -46,6 +51,10 @@ export default class Start extends Phaser.Scene {
 
     new Button(x, y + 170, "Starten Level 3", this, () =>
       this.scene.start("Level3Scene")
+    );
+
+    new Button(x, y + 220, "Starten Level 4", this, () =>
+      this.scene.start("Level4Scene")
     );
   }
 }

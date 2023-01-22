@@ -3,10 +3,11 @@ import BaseLevel from "./BaseLevel";
 export default class Level3 extends BaseLevel {
   constructor() {
     super("Level3Scene");
-    this.nextLevel = "";
+    this.nextLevel = "Level4Scene";
   }
 
   preload() {
+    this.load.image("galleria", "assets/bg_galleria.png");
     this.load.tilemapTiledJSON("map3", "assets/level_3_tiles.json");
   }
 

@@ -1,20 +1,21 @@
-import { Enemy } from "./../types";
+import { IMonster, IPlayer } from "./../types";
 import { propertyMap } from "../utils";
 import Fighter from "../fighter";
 import SceneDisplay from "../sceneDisplay";
 import Chicken from "../chicken";
-import Player from "../player";
 import Clouds from "./Clouds";
 import Ball from "../ball";
 import ObjectGenerator from "../objectGenerator";
 import MovingPlatform from "../movingPlatform";
 import createBackground from "./createBackground";
+import SeeMonster from "../seeMonster";
 
 export default class BaseLevel extends Phaser.Scene {
-  player?: Player;
+  type: "underwater" | "land" = "land";
+  player?: IPlayer;
   clouds?: Clouds;
   nextLevel?: string;
-  monsters: Chicken[] | Fighter[] = [];
+  monsters: IMonster[] = [];
   platforms: MovingPlatform[] = [];
 
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -23,18 +24,19 @@ export default class BaseLevel extends Phaser.Scene {
   collisionLayer!: Phaser.Tilemaps.TilemapLayer;
   sceneDisplay!: SceneDisplay;
 
-  killMonster(monster: Enemy) {
+  killMonster(monster: IMonster) {
     this.monsters = this.monsters.filter((m) => m !== monster);
     monster?.die();
   }
 
   addMonster(
-    Klass: typeof Chicken | typeof Fighter,
+    Klass: typeof Chicken | typeof Fighter | typeof SeeMonster,
     xPosition: number = 0,
+    yPosition: number = 0,
     onMonsterDefeat?: () => void
   ) {
     if (this.player?.isDead) return;
-    const monster = new Klass(this, xPosition, 0, onMonsterDefeat);
+    const monster = new Klass(this, xPosition, yPosition, onMonsterDefeat);
     this.physics.add.collider(
       monster.sprite,
       this.collisionLayer,
@@ -71,14 +73,19 @@ export default class BaseLevel extends Phaser.Scene {
   addFighter() {
     const figters = this.objectGenerator.findObjects("Fighter");
     figters.forEach((fighter) => {
-      this.addMonster(Fighter, fighter.x);
+      this.addMonster(Fighter, fighter.x, fighter.y);
+    });
+
+    const seeMonsters = this.objectGenerator.findObjects("SeeMonster");
+    seeMonsters.forEach((fighter) => {
+      this.addMonster(SeeMonster, fighter.x, fighter.y);
     });
   }
 
   addChicken() {
     const chicken = this.objectGenerator.findObjects("Chicken");
     const addChick = (chick: any) => {
-      this.addMonster(Chicken, chick.x, () => addChick(chick));
+      this.addMonster(Chicken, chick.x, chick.y, () => addChick(chick));
     };
     chicken.forEach(addChick);
   }
@@ -138,8 +145,10 @@ export default class BaseLevel extends Phaser.Scene {
   addShotBinding() {
     this.input.keyboard.on("keydown", (event: any) => {
       if (["Enter"].includes(event.key)) {
-        const ball = this.player?.shoot();
-        this.addMonsterHittest(ball);
+        if (this.player?.shoot) {
+          const ball = this.player.shoot();
+          this.addMonsterHittest(ball);
+        }
       }
     });
   }
@@ -163,7 +172,7 @@ export default class BaseLevel extends Phaser.Scene {
     tilesetKey: string,
     tilesetName: string = "titles_01",
     background: string = "mountains",
-    loadClouds: boolean = true
+    loadClouds: boolean = true,
   ) {
     this.cursors = this.input.keyboard.createCursorKeys();
     createBackground(background, this);
@@ -181,7 +190,7 @@ export default class BaseLevel extends Phaser.Scene {
       .createLayer("collision", tileset, 0, 0)
       .setCollisionByProperty({ collides: true });
 
-    this.player = this.objectGenerator.createPlayer();
+    this.player = this.objectGenerator.createPlayer();    
     this.addColliders();
     camera.startFollow(this.player.sprite, true, 0.08, 0.08);
 
@@ -199,7 +208,8 @@ export default class BaseLevel extends Phaser.Scene {
     this.player?.update(
       this.cursors.left.isDown,
       this.cursors.right.isDown,
-      this.cursors.up.isDown || this.cursors.space.isDown
+      this.cursors.up.isDown || this.cursors.space.isDown,
+      this.cursors.down.isDown,
     );
     this.platforms.map((p) => p.update());
   }

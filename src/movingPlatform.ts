@@ -1,11 +1,11 @@
 import Phaser from "phaser";
-import Player from "./player";
+import { IPlayer } from "./types";
 
 type Size = "platform_small" | "platform_medium" | "platform_big";
 
 export default class MovingPlatform {
   scene: Phaser.Scene;
-  player?: Player;
+  player?: IPlayer;
   speed: number;
 
   public image: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
@@ -16,7 +16,7 @@ export default class MovingPlatform {
 
   constructor(
     scene: Phaser.Scene,
-    player?: Player,
+    player?: IPlayer,
     x: number = 0,
     y: number = 0,
     config: Map<string, any> = new Map()

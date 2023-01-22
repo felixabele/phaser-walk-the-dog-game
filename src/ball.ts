@@ -1,18 +1,18 @@
 import Phaser from "phaser";
-import Player from "./player";
+import { IPlayer } from "./types";
 
 export default class Ball {
   public scene: Phaser.Scene;
   public sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public isPickedUp: boolean = false;
 
-  private player: Player;
+  private player: IPlayer;
   private inventaryImage?: Phaser.GameObjects.Image;
 
   constructor(
     scene: Phaser.Scene,
     collisionLayer: Phaser.Tilemaps.TilemapLayer,
-    player: Player,
+    player: IPlayer,
     x: number = 0,
     y: number = 0
   ) {

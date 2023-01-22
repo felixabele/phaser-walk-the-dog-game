@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import Ball from "./ball";
+import { IPlayer } from "./types";
 
-export default class Player {
+export default class Player implements IPlayer {
   static spritesheet = {
     key: "player",
     url: "/assets/white-dog-sprite.png",
@@ -24,7 +25,6 @@ export default class Player {
     this.sprite = scene.physics.add
       .sprite(x, y, "player", 0)
       .setScale(0.25, 0.25)
-      .setSize(300, 316)
       .setFlipX(true)
       .setCollideWorldBounds(false);
 
@@ -53,7 +53,7 @@ export default class Player {
     });
   }
 
-  public update(goLeft: boolean, goRight: boolean, jump: boolean): void {
+  public update(goLeft: boolean, goRight: boolean, jump: boolean, _kneel: boolean): void {
     if (this.isDead) return;
 
     const { x, y } = this.sprite.body.velocity;

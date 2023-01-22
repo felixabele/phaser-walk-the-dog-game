@@ -1,8 +1,9 @@
+import { IMonster } from './types';
 import Phaser from "phaser";
 import Monster from "./monster";
 import { randomInteger, randomDecimal } from "./utils";
 
-export default class Chicken extends Monster {
+export default class Chicken extends Monster implements IMonster {
   static spritesheet = {
     key: "chicken",
     url: "/assets/chicken-sprite.png",

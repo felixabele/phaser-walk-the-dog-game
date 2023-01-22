@@ -1,34 +1,24 @@
 import Phaser from "phaser";
 import Monster from "./monster";
 import { IMonster } from "./types";
-import { randomInteger } from "./utils";
+import { randomInteger, randomArrayItem } from "./utils";
 
-export default class Fighter extends Monster implements IMonster {
-  static spritesheet3 = {
-    key: "fighter3",
-    url: "/assets/fighter_3_sprite.png",
-    frameConfig: {
-      frameWidth: 200,
-      frameHeight: 185,
-      endFrame: 6,
-    },
-  };
-
-  static spritesheet2 = {
-    key: "fighter2",
-    url: "/assets/fighter_2_sprite.png",
-    frameConfig: {
-      frameWidth: 158,
-      frameHeight: 185,
-      endFrame: 6,
-    },
-  };
-
-  static spritesheet4 = {
-    key: "fighter4",
-    url: "/assets/fighter_4_sprite.png",
+export default class SeeMonster extends Monster implements IMonster {
+  static spritesheetFish = {
+    key: "fish",
+    url: "/assets/see_monster_fish_sprite.png",
     frameConfig: {
       frameWidth: 386,
+      frameHeight: 185,
+      endFrame: 4,
+    },
+  };
+
+  static spritesheetKraken = {
+    key: "kraken",
+    url: "/assets/see_monster_kraken_sprite.png",
+    frameConfig: {
+      frameWidth: 224,
       frameHeight: 185,
       endFrame: 4,
     },
@@ -40,28 +30,28 @@ export default class Fighter extends Monster implements IMonster {
     y: number,
     afterDeath?: () => void
   ) {
-    const nb = randomInteger(2, 3);
-    const fighterName = `fighter${nb}`;
+    const fighterName = randomArrayItem<string>(["fish", "kraken"]);
     super(scene, fighterName, x, y, afterDeath);
     const { anims } = this.scene;
 
-    this.walkingSpeed = randomInteger(50, 80);
+    this.walkingSpeed = randomInteger(30, 60);
     this.sprite
       .setScale(0.5, 0.5)
-      .setGravity(100);
+      .setSize(200, 100);
 
     anims.create({
       key: `${fighterName}-walk`,
       frames: anims.generateFrameNumbers(fighterName, {
-        frames: [0, 1, 2, 3, 4],
+        frames: [0, 1, 2, 3],
       }),
       frameRate: 6,
+      yoyo: true,
     });
 
     anims.create({
       key: `${fighterName}-die`,
       frames: anims.generateFrameNumbers(fighterName, {
-        frames: [4, 5, 6],
+        frames: [2, 3],
       }),
       frameRate: 6,
     });
