@@ -16,7 +16,7 @@ export default class Clouds {
     this.scene = scene;
     this.cloudImages = [];
     this.frames = [];
-    this.worldEnd = this.scene.cameras.main.getBounds().width;
+    this.worldEnd = 2240;
 
     const atlasTexture = this.scene.textures.get("clouds");
     this.frames = atlasTexture.getFrameNames();

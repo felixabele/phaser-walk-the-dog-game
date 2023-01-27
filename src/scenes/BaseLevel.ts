@@ -34,7 +34,7 @@ export default class BaseLevel extends Phaser.Scene {
     xPosition: number = 0,
     yPosition: number = 0,
     onMonsterDefeat?: () => void
-  ) {
+  ): IMonster | void {
     if (this.player?.isDead) return;
     const monster = new Klass(this, xPosition, yPosition, onMonsterDefeat);
     this.physics.add.collider(
@@ -56,6 +56,8 @@ export default class BaseLevel extends Phaser.Scene {
         }
       });
     }
+
+    return monster;
   }
 
   addMonsterHittest(ball?: Ball) {
@@ -83,11 +85,10 @@ export default class BaseLevel extends Phaser.Scene {
   }
 
   addChicken() {
-    const chicken = this.objectGenerator.findObjects("Chicken");
-    const addChick = (chick: any) => {
+    const addChick = (chick: Phaser.Types.Tilemaps.TiledObject) => {
       this.addMonster(Chicken, chick.x, chick.y, () => addChick(chick));
     };
-    chicken.forEach(addChick);
+    this.objectGenerator.findObjects("Chicken").forEach(addChick);
   }
 
   addBalls() {
@@ -102,16 +103,18 @@ export default class BaseLevel extends Phaser.Scene {
   addPlatforms() {
     if (!this.player) return;
     const platformObjects = this.objectGenerator.findObjects("Platforms");
-    this.platforms = platformObjects.map((platformObj: any) => {
-      const config = propertyMap(platformObj.properties);
-      return new MovingPlatform(
-        this,
-        this.player,
-        platformObj.x,
-        platformObj.y,
-        config
-      );
-    });
+    this.platforms = platformObjects.map(
+      (platformObj: Phaser.Types.Tilemaps.TiledObject) => {
+        const config = propertyMap(platformObj.properties);
+        return new MovingPlatform(
+          this,
+          this.player,
+          platformObj.x,
+          platformObj.y,
+          config
+        );
+      }
+    );
   }
 
   killCharacters() {

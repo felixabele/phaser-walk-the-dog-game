@@ -10,7 +10,7 @@ export default class Chicken extends Monster implements IMonster {
     frameConfig: {
       frameWidth: 146,
       frameHeight: 144,
-      endFrame: 4,
+      endFrame: 5,
     },
   };
 
@@ -42,8 +42,8 @@ export default class Chicken extends Monster implements IMonster {
 
     anims.create({
       key: "chicken-die",
-      frames: anims.generateFrameNumbers("chicken", { frames: [2, 3] }),
-      frameRate: 6,
+      frames: anims.generateFrameNumbers("chicken", { frames: [3, 4, 5] }),
+      frameRate: 5,
     });
   }
 }

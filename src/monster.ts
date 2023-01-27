@@ -65,7 +65,9 @@ export default class Monster {
 
   public die(preventCallback?: boolean) {
     if (!this.sprite || this.isDead) return;
-    this.sprite.play({ key: `${this.spriteName}-die` });
+    try {
+      this.sprite.play({ key: `${this.spriteName}-die` });
+    } catch (error) {}
     this.sprite.body.setVelocityX(0);
 
     this.isDead = true;

@@ -56,5 +56,9 @@ export default class Start extends Phaser.Scene {
     new Button(x, y + 220, "Starten Level 4", this, () =>
       this.scene.start("Level4Scene")
     );
+
+    new Button(x, y + 270, "Starten Level 5", this, () =>
+      this.scene.start("Level5Scene")
+    );
   }
 }

@@ -11,7 +11,7 @@ export default class Level4 extends BaseLevel {
         },
       },
     });
-    this.nextLevel = "";
+    this.nextLevel = "Level5Scene";
     this.type = "underwater";
   }
 

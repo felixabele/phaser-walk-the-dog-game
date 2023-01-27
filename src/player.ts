@@ -26,6 +26,7 @@ export default class Player implements IPlayer {
       .sprite(x, y, "player", 0)
       .setScale(0.25, 0.25)
       .setFlipX(true)
+      .setSize(300, 300)
       .setCollideWorldBounds(false);
 
     this.initAnmations();
